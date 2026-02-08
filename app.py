@@ -1,22 +1,17 @@
 import streamlit as st
 import speech_recognition as sr
-from pydub import AudioSegment
 from sumy.parsers.plaintext import PlaintextParser
 from sumy.nlp.tokenizers import Tokenizer
 from sumy.summarizers.lsa import LsaSummarizer
 import tempfile
-
-
 import nltk
-nltk.download('punkt')
-nltk.download('punkt_tab')
 
-
+# Download required NLTK data
 nltk.download('punkt')
 
 st.set_page_config(page_title="Text & Voice Summarization App", layout="centered")
 st.title("📄 Text & Voice Summarization Chatbot")
-st.write("Enter text or upload audio to get a summary.")
+st.write("Enter text or upload a WAV audio file to get a summary.")
 
 # -------- Text Summarization Function --------
 def summarize_text(text, sentence_count=3):
@@ -29,9 +24,9 @@ def summarize_text(text, sentence_count=3):
 def summarize_audio(audio_file):
     recognizer = sr.Recognizer()
 
+    # Save uploaded file temporarily
     with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as temp_audio:
-        audio = AudioSegment.from_file(audio_file)
-        audio.export(temp_audio.name, format="wav")
+        temp_audio.write(audio_file.read())
         temp_path = temp_audio.name
 
     with sr.AudioFile(temp_path) as source:
@@ -62,8 +57,8 @@ with tab1:
 
 # -------- AUDIO TAB --------
 with tab2:
-    st.subheader("Upload Audio File (wav/mp3)")
-    audio_file = st.file_uploader("Upload audio file", type=["wav", "mp3"])
+    st.subheader("Upload WAV Audio File")
+    audio_file = st.file_uploader("Upload audio file (WAV only)", type=["wav"])
 
     if st.button("Summarize Audio"):
         if audio_file:
@@ -78,4 +73,4 @@ with tab2:
                 except Exception as e:
                     st.error(f"Error: {e}")
         else:
-            st.warning("Please upload an audio file.")
+            st.warning("Please upload a WAV audio file.")
