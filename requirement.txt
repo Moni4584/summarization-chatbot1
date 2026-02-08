@@ -3,3 +3,6 @@ SpeechRecognition
 pydub
 sumy
 nltk
+torch
+torchvision
+torchaudio
